@@ -2,6 +2,7 @@ import os
 import pickle
 import click
 import mlflow
+import pandas as pd
 
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
@@ -35,6 +36,16 @@ def run_train(data_path: str):
     y_pred = rf.predict(X_val)
 
     rmse = mean_squared_error(y_val, y_pred, squared=False)
+
+    # using mlflow model to predict the data
+    logged_model = 'runs:/74512cf48d544c069796ec914e15cf57/model'
+
+    # Load model as a PyFuncModel.
+    loaded_model = mlflow.pyfunc.load_model(logged_model)
+
+    # Predict on a Pandas DataFrame.
+    pred = loaded_model.predict(X_val)
+    print(pred[:10])
 
 
 if __name__ == '__main__':
